@@ -1,0 +1,52 @@
+# Versión utilizada
+# La versión 3 es la más utilizada y la que se recomienda
+version: "3"
+
+# Configuración de los servidores que vamos a necesitar
+services: 
+ 
+  # mysql es el nombre que vamos a dar a este primer servidor
+  # Será el nombre que tendremos que usar cuando nos refiramos a él
+  mysql:
+    build: mysql/
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: dwes
+      MYSQL_USER: dwes
+      MYSQL_PASSWORD: dwes
+      MYSQL_DATABASE: dwes
+    volumes:
+      - ./bbdd:/var/lib/mysql/
+    networks:
+      - default
+  apache:
+    build: apache/
+    ports:
+      - 80:80
+    links: 
+      - mysql:mysql
+    volumes:
+      - ./proyecto:/var/www/html/
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links: 
+        - mysql:mysql
+    ports:
+        - 8000:80
+    environment:
+        MYSQL_USER: dwes
+        MYSQL_PASSWORD: dwes
+        MYSQL_ROOT_PASSWORD: dwes
+
+  php:
+    build: php/
+    ports:
+      - 9000:9000
+    volumes:
+      - ./proyecto:/var/www/html/
+
+volumes: 
+  proyecto:
+  bbdd:
